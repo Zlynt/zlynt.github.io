@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeechRobot Example</title>
+
+
+    <!-- #region Definições da página -->
+
+    <!-- bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Jquery JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- dependencia do bootstrap, posicionamento na pagina-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <!-- #endregion-->
+
+    <script src="/SpeechRobotDemo/SpeechRobot.js"></script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="/index.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">WR</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+    <div class="jumbotron text-center" style="margin-bottom:0">
+        <h1>SpeechRobot Examples</h1>
+        <p>Note: Speech to Text only works on Google Chrome and Apple Safari.</p>
+    </div>
+    </div>
+    <div class="container text-center">
+
+        <div class="container">
+            <br>
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Text to speech</h5>
+
+                    <textarea id="textarea_sentence" class="form-control"></textarea>
+
+                    <p></p>
+                    <select class="form-control" id="tts_language">
+                        <option selected>en-US</option>
+                        <option>pt-BR</option>
+                    </select>
+
+                    <p></p>
+                    <button id="tts_speak" type="button" class="btn btn-primary">Speak</button>
+                </div>
+            </div>
+            <br>
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Speech to Text</h5>
+
+                    <h6>What SpeechRobot understood:</h6>
+                    <p class="text-justify" id="speech_to_text_result">...</p>
+
+                    <p></p>
+                    <select class="form-control" id="stt_language">
+                        <option selected>en-US</option>
+                        <option>pt-BR</option>
+                    </select>
+
+                    <p></p>
+                    <button id="stt_listen" type="button" class="btn btn-success">Listen</button>
+                    <button id="stt_stop_listening" type="button" class="btn btn-danger" disabled>Stop
+                        Listening</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        let speechRobot = new SpeechRobot();
+
+        $("#tts_speak").click((e) => {
+            e.preventDefault();
+            speechRobot.speak($("#tts_language").val(), $("#textarea_sentence").val());
+        });
+
+        $("#stt_listen").click((e) => {
+            e.preventDefault();
+
+            $("#stt_stop_listening").prop('disabled', false);
+            $("#stt_listen").prop('disabled', true);
+            $("#speech_to_text_result").html("");
+
+            speechRobot.listen($("#stt_language").val(), (recognized_sentence) => {
+                $("#speech_to_text_result").append(" " + recognized_sentence);
+            });
+        });
+
+        $("#stt_stop_listening").click((e) => {
+            e.preventDefault();
+
+            $("#stt_listen").prop('disabled', false);
+            $("#stt_stop_listening").prop('disabled', true);
+
+            speechRobot.stopListening();
+        });
+
+
+    </script>
+</body>
+
+</html>
