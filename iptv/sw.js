@@ -1,4 +1,4 @@
-var CACHE_NAME = 'leiptv-cache-v1.0.0';
+var CACHE_NAME = 'leiptv-cache-v1.0.0 Alpha 1';
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
