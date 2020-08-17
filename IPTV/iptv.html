@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeIPTV - IPTV Player</title>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+    <script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <style>
+        body {
+            background-color: black;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #video_player {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            z-index: -1;
+        }
+
+        #channel_information {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            width: 100%;
+            height: 150px;
+            z-index: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: rgb(61, 61, 61);
+        }
+
+        #channel_information #previous_channel_arrow {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+        }
+
+        #channel_information #next_channel_arrow {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            cursor: pointer;
+        }
+
+        #channel_information #channel_information_icon {
+            position: absolute;
+            right: 50px;
+            top: 10px;
+            cursor: pointer;
+
+        }
+
+        #play_button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: calc(10vh + 10vw);
+            cursor: pointer;
+        }
+
+        #play_button:hover {
+            color: rgb(173, 173, 173);
+            transition: all 0.2s ease-in-out;
+
+        }
+
+        #channel_information .add_unit{
+            position: absolute;
+            top: 10px;
+            right: 100px;
+            bottom: 10px;
+            height: 80%;
+            width: 20%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <video crossOrigin="anonymous" id="video_player" class="video-js vjs-default-skin" preload="auto" width="640"
+        height="268" data-setup='{}'>
+    </video>
+
+    <span id="play_button"><i class="fas fa-play-circle"></i></span>
+
+    <div id="channel_information">
+        <span id="previous_channel_arrow"><i class="fas fa-chevron-up"></i></span>
+        <span id="channel_information_icon"><i class="fas fa-info-circle"></i></span>
+        <h1 style="margin-left: 30px;"><span id="channel_id">#</span> <span id="channel_name">Channel Name</span></h1>
+        <h3 style="margin-left: 40px;"><span id="channel_description" style="visibility: hidden;">Channel
+                Description</span></h3>
+
+        <iframe data-aa="1453663" src="//acceptable.a-ads.com/1453663" scrolling="no"
+            style="border:0px; padding:0; overflow:hidden" allowtransparency="true"
+            class="add_unit"></iframe>
+
+        <span id="next_channel_arrow"><i class="fas fa-chevron-down"></i></span>
+    </div>
+
+    <script>
+        $("body").hide();
+        $("body").fadeIn(1000);
+
+        var myPlayer;
+        let channels = {};
+
+        const m3u8_tools = {
+            getAllIndexes: () => {
+                var keys = [];
+                for (var k in channels) keys.push(k);
+                keys.sort();
+                return keys;
+            },
+
+            loadPlayList: (__callback = () => { }) => {
+                $.get(localStorage.listURL, function (data, status) {
+                    let lines = data.split("\n");
+                    for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+                        let lineHeader = lines[lineNumber].split(" ")[0];
+
+                        switch (lineHeader) {
+                            case "#EXTINF:-1":
+                                let currentChannel = {};
+                                let channelHasNotIdCounter = 0;
+
+                                let lineData = lines[lineNumber].replace(lineHeader, "").split(",");
+                                lineData.pop();
+                                lineData = lineData.join('').split(" ");
+                                for (let lineTagNumber = 0; lineTagNumber < lineData.length; lineTagNumber++) {
+                                    let lineTagHeader = lineData[lineTagNumber].split("=")[0];
+                                    let lineTagData = lineData[lineTagNumber].replace(lineTagHeader + "=", "").replace(/"/g, "");
+
+                                    switch (lineTagHeader) {
+                                        case "tvg-id":
+                                            currentChannel.id = lineTagData;
+                                            break;
+                                        case "tvg-logo":
+                                            currentChannel.logo = lineTagData;
+                                            break;
+                                        case "tvg-language":
+                                            currentChannel.language = lineTagData;
+                                            break;
+                                        case "group-title":
+                                            currentChannel.group = lineTagData;
+                                            break;
+
+                                        default: break;
+                                    }
+                                }
+                                currentChannel.name = lines[lineNumber].split(",")[lines[lineNumber].split(",").length - 1];
+                                currentChannel.url = lines[lineNumber + 1];
+
+                                if (currentChannel.id === undefined) {
+                                    currentChannel.id = "NOID" + channelHasNotIdCounter;
+                                    channelHasNotIdCounter++;
+                                }
+                                lineNumber++;
+
+                                jQuery.each(currentChannel, function (key, val) {
+                                    if (channels[currentChannel.id] === undefined)
+                                        channels[currentChannel.id] = {};
+
+                                    channels[currentChannel.id][key] = val;
+                                });
+                                break;
+
+                            default: break;
+                        }
+                    }
+                    __callback();
+                });
+            }
+        }
+
+        const gui_toolbox = {
+            update_channel_info: () => {
+                $("#channel_id").html(m3u8_tools.getAllIndexes().indexOf(channels[localStorage.lastChannel].id) + 1);
+                $("#channel_name").html(channels[localStorage.lastChannel].name);
+                $("#channel_description").html('No description');
+            },
+
+            play: () => {
+                myPlayer.src({
+                    type: 'application/x-mpegURL',
+                    src: channels[localStorage.lastChannel].url
+                });
+                myPlayer.play();
+                $("#play_button").hide();
+            }
+        }
+
+        m3u8_tools.loadPlayList(() => {
+            let orderedIDs = m3u8_tools.getAllIndexes();
+            if (localStorage.lastChannel === undefined)
+                localStorage.setItem("lastChannel", orderedIDs[0]);
+            if (orderedIDs.indexOf(localStorage.lastChannel) < 0)
+                localStorage.setItem("lastChannel", orderedIDs[0]);
+
+            gui_toolbox.update_channel_info();
+        });
+
+
+
+        const isVideoOnPause = () => {
+            setTimeout(function () {
+                isVideoOnPause();
+                if (myPlayer.paused()) {
+                    $("#play_button").show();
+                } else {
+                    $("#play_button").hide();
+                }
+            }, 1000);
+        }
+
+        videojs("video_player").ready(function () {
+            myPlayer = this;
+            isVideoOnPause();
+        });
+
+        var timeout;
+        document.onmousemove = function () {
+            clearTimeout(timeout);
+            $("#channel_information").fadeIn(500);
+            $('body').css('cursor', 'auto');
+            timeout = setTimeout(function () {
+                $("#channel_information").fadeOut(500);
+                $('body').css('cursor', 'none');
+                //alert("move your mouse"); 
+            }, 1000);
+        }
+
+
+        document.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+            clearTimeout(timeout);
+            $("#channel_information").fadeIn(500);
+            $('body').css('cursor', 'auto');
+            timeout = setTimeout(function () {
+                $("#channel_information").fadeOut(500);
+                $('body').css('cursor', 'none');
+                //alert("move your mouse"); 
+            }, 1000);
+        }, false);
+
+        $("#play_button").on("click", () => {
+            gui_toolbox.play();
+        });
+
+        $("#previous_channel_arrow").on("click", () => {
+            let orderedIDs = m3u8_tools.getAllIndexes();
+            if (orderedIDs.indexOf(localStorage.lastChannel) >= 0) {
+
+                let channelIndex = orderedIDs.indexOf(localStorage.lastChannel) - 1;
+                if (channelIndex < 0)
+                    channelIndex = orderedIDs.length - 1;
+                localStorage.setItem("lastChannel", orderedIDs[channelIndex]);
+
+                gui_toolbox.update_channel_info();
+                gui_toolbox.play();
+            }
+
+        });
+
+        $("#next_channel_arrow").on("click", () => {
+            let orderedIDs = m3u8_tools.getAllIndexes();
+            if (orderedIDs.indexOf(localStorage.lastChannel) >= 0) {
+
+                let channelIndex = orderedIDs.indexOf(localStorage.lastChannel) + 1;
+                if (channels > orderedIDs.length - 1)
+                    channelIndex = 0;
+                localStorage.setItem("lastChannel", orderedIDs[channelIndex]);
+
+                gui_toolbox.update_channel_info();
+                gui_toolbox.play();
+            }
+
+        });
+    </script>
+
+</body>
+
+</html>
