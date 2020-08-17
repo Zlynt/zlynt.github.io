@@ -1,4 +1,4 @@
-var CACHE_NAME = 'leiptv-cache-v1';
+var CACHE_NAME = 'leiptv-cache-v1.0.0';
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
@@ -7,7 +7,9 @@ self.addEventListener('install', function (event) {
         '/iptv/',
         '/iptv/index.html',
         '/iptv/iptv.html',
-        '/iptv/logo.png'
+        '/iptv/logo.png',
+        '/iptv/logo_180.png',
+        '/iptv/logo_512.png'
       ]);
     })
   )

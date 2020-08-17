@@ -16,6 +16,12 @@
         "src": "/iptv/logo_512.png",
         "sizes": "512x512",
         "type": "image/png"
+      },
+
+      {
+        "src": "/iptv/logo_180.png",
+        "sizes": "180x180",
+        "type": "image/png"
       }
     ]
   }
