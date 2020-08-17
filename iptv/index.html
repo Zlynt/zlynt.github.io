@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeIPTV - IPTV Player</title>
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="theme-color" content="#317EFB" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="manifest" href="/iptv/manifest.json" />
+    <link rel="icon" type="image/png" href="/iptv/logo.png">
+    <title>LeIPTV - IPTV Player</title>
 
+    <!--#region Dependencies-->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
@@ -23,7 +24,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
-
+    <!--#endregion-->
+    <!--#region Design-->
     <style>
         html,
         body {
@@ -80,11 +82,12 @@
             border-top-right-radius: 0;
         }
     </style>
+    <!--#endregion-->
 </head>
 
 <body class="text-center">
     <form class="form-signin" id="signin-form">
-        <img class="mb-4" src="logo.png" alt="" width="72" height="72" style="border-radius: 10px;">
+        <img class="mb-4" src="/iptv/logo.png" alt="" width="72" height="72" style="border-radius: 10px;">
         <h1 class="h3 mb-3 font-weight-normal">LeIPTV Beta</h1>
         <p class="p mb-3 font-weight-normal">Introduze your channel and epg list</p>
         <label for="inputList" class="sr-only">Channel List</label>

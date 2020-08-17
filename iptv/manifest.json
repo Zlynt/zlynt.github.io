@@ -1,13 +1,15 @@
 {
     "name": "LeIPTV",
     "short_name": "LeIPTV",
-    "icons": [{
-        "src": "/logo.png",
-        "sizes": "348x215",
-        "type": "image/png"
-      }],
-    "start_url": "/index.html",
+    "theme_color": "#2a0044",
+    "background_color": "#2a0044",
     "display": "standalone",
-    "background_color": "#3E4EB8",
-    "theme_color": "#2F3BA2"
+    "start_url": "/iptv/index.html",
+    "icons": [
+      {
+        "src": "/iptv/logo.png",
+        "sizes": "215x215",
+        "type": "image/png"
+      }
+    ]
   }
