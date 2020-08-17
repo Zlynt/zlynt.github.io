@@ -14,3 +14,13 @@ self.addEventListener('install', function (event) {
     })
   )
 });
+
+self.addEventListener('fetch', event => {
+  console.log('[Service Worker] Fetching something ....', event);
+  // This fixes a weird bug in Chrome when you open the Developer Tools
+  if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
+    return;
+
+  }
+  event.respondWith(fetch(event.request));
+});
