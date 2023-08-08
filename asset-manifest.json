@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "https://zlynt.github.io/static/css/main.c624d642.css",
-    "main.js": "https://zlynt.github.io/static/js/main.d99385bd.js",
+    "main.css": "https://zlynt.github.io/static/css/main.192973c8.css",
+    "main.js": "https://zlynt.github.io/static/js/main.177264e0.js",
     "static/media/Phone.png": "https://zlynt.github.io/static/media/Phone.0019a0ad387ba19dc45b.png",
     "static/media/clouds.png": "https://zlynt.github.io/static/media/clouds.3c700c1313cc1cd3d3c5.png",
     "static/media/antoine-barres.jpg": "https://zlynt.github.io/static/media/antoine-barres.bc3299c239c25e5bf937.jpg",
@@ -29,7 +29,7 @@
     "index.html": "https://zlynt.github.io/index.html"
   },
   "entrypoints": [
-    "static/css/main.c624d642.css",
-    "static/js/main.d99385bd.js"
+    "static/css/main.192973c8.css",
+    "static/js/main.177264e0.js"
   ]
 }
